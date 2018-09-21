@@ -1,32 +1,30 @@
 # Efficient Graph-Based Image Segmentation
 
-∈
-
 ## 基础知识
  - 一张图是由不同的像素点构成的，本文的计算和构建都是基于像素点的运算，即`(RGB)`值
+ - 高斯模糊/拉普拉斯变换:用于转换图像，减少图像噪声的平滑算法
  - 最小生成树`(Minimum Spanning Tree | MST)`指的是，在图中建立一个连通图并且没有回路是生成树，而最小生成树指的是构成结果权值最小
  - 不同像素点之间的差:即`RGB`值之间的欧氏距离
+   - <a href="https://www.codecogs.com/eqnedit.php?latex=\dpi{80}&space;\sqrt{(R_1^2-R_2^2)&plus;(G_1^2-G_1^2)&plus;(B_1^2-B_2^2)}" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\dpi{80}&space;\sqrt{(R_1^2-R_2^2)&plus;(G_1^2-G_1^2)&plus;(B_1^2-B_2^2)}" title="\sqrt{(R_1^2-R_2^2)+(G_1^2-G_1^2)+(B_1^2-B_2^2)}" /></a>
+ - 并查集算法(union find set)以及克鲁斯卡尔算法(Kruskal)，使用边建立并查集，并且使用kruskal进行搜索合并
 
+## 早期的分割方法
+ - Zahn提出了一种*基于图的最小生成树（MST）*的分割方法，用来进行点聚类以及图像分割，前者权值是点间距离，后者权值是像素差异。
+  - 不足：根据阈值不同，会导致高可变性（大约是色彩对比强的一个区域）区域划分为多个区域；将ramp和constant region合并到一起。
+ - Urquhart提出用边相连的点中边权值最小的进行归一化，找周围相似的。
+ - 根据各个区域是否符合某种均匀性标准来分割，找均匀强度或梯度的区域，不适用于某个变化很大的区域。
+ - 使用特征空间聚类：通过平滑数据——给定半径的超球面对各个点扩张其连通分量，找到簇，来保持该区域的边界，并对数据进行转换。
 
-## 最早的分割方法
-&emsp;&emsp;使用给定的阈值或局部量来计算。
-Zahn提出了一种*基于图的最小生成树（MST）*的分割方法，用来进行点聚类以及图像分割，前者权值是点间距离，后者权值是像素差异。
-
-&emsp;&emsp;不足：根据阈值不同，会导致高可变性（大约是色彩对比强的一个区域）区域划分为多个区域；将ramp和constant region合并到一起。
-Urquhart提出用边相连的点中边权值最小的进行归一化，找周围相似的。（不太明白？）
-
-&emsp;&emsp;**另一种早期分割方法**：根据各个区域是否符合某种均匀性标准来分割，找均匀强度或梯度的区域，不适用于某个变化很大的区域。
-
-&emsp;&emsp;**分割方法总结**：1.分成小块；2.与周围区域合并。
-
-&emsp;&emsp;使用特征空间聚类：通过平滑数据——给定半径的超球面对各个点扩张其连通分量，找到簇，来保持该区域的边界，并对数据进行转换。（不太明白？）
-
-&emsp;&emsp;**规范化切割标准。**
 ## 基于图的分割
-&emsp;&emsp;区域内两个点间权值小，区间两点的权值大。
-定义谓词D，用于计算两个区域边界上点的差异，C是区域内最小生成树中的最大权值,区域内差异计算：
-
- *Int(C)* = max *w(e)* , *e∈MST(C，E)*
+### 定义
+ - `G`:将图像由像素点转化为图
+ - `V`:每一个像素点都是图中的点
+ - `E`:任意两个相邻像素点之间边
+ - `C`:被划分的`Segmentation`,一个`C`中有至少1个像素点
+ - `Int(C)`:区域内最小生成树权值最大的边，表示的是，记为
+   - <a href="https://www.codecogs.com/eqnedit.php?latex=\dpi{80}&space;Int(C)&space;=&space;\max_{e\in&space;MST(C,E)}w(e)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\dpi{80}&space;Int(C)&space;=&space;\max_{e\in&space;MST(C,E)}w(e)" title="Int(C) = \max_{e\in MST(C,E)}w(e)" /></a>
+ - `Dif(C1,C2)`:表示C1和C2之间的距离，记为
+   - <a href="https://www.codecogs.com/eqnedit.php?latex=\dpi{80}&space;Dif(C_1,C_2)&space;=&space;\min_{v_i\in&space;C_1,v_j\in&space;C_2,(v_i,v_j)\in&space;E}w(v_i,v_j)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\dpi{80}&space;Dif(C_1,C_2)&space;=&space;\min_{v_i\in&space;C_1,v_j\in&space;C_2,(v_i,v_j)\in&space;E}w(v_i,v_j)" title="Dif(C_1,C_2) = \min_{v_i\in C_1,v_j\in C_2,(v_i,v_j)\in E}w(v_i,v_j)" /></a>
 
 &emsp;&emsp;区间差异定义为：
 
