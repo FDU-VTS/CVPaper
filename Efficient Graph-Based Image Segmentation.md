@@ -1,5 +1,8 @@
 # Efficient Graph-Based Image Segmentation
 
+## 原文链接
+ - http://www.cs.cornell.edu/~dph/papers/seg-ijcv.pdf
+
 ## 基础知识
  - 一张图是由不同的像素点构成的，本文的计算和构建都是基于像素点的运算，即`(RGB)`值
  - 高斯模糊/拉普拉斯变换:用于转换图像，减少图像噪声的平滑算法
