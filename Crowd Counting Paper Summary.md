@@ -170,3 +170,7 @@ using Semi-Supervised Dual-Goal Generative Adversarial Networks`
    - 利用GAN做半监督
 - `iccv19: Pushing the Frontiers of Unconstrained Crowd Counting: New Dataset and Benchmark Method`
    - 主要提出了一个新的数据集: JHU-CROWD
+- `iccv19: Perspective-Guided Convolution Networks for Crowd Counting`
+   - 主要解决perspective的问题
+   - 提出过去的方法为了解决感受野的问题都是使用`multi-kernels`
+   - 通过生成一个`perspective map`去调整由backbone生成的密度图, 从而减小`perspective problem`造成的问题

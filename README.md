@@ -1,8 +1,61 @@
-### Introduction
+# Introduction
 
 #### Summary about Computer Vision Paper
 
-### demo: ./`Crowd Counting Paper Summary.md`
+### demo: `./Crowd Counting Paper Summary.md`
+
+## 2019
+- `cvpr19: Leveraging Heterogeneous Auxiliary Tasks to Assist Crowd Counting`
+  - 除了backbone本身的loss之外,增加了heterogeneous attributes,包括了
+    - `Geometric attribute (depth prediction)`:通过生成辅助depth map来减小perspective
+distortion的影响
+    - `Semantic attribute (crowd segmentation)`:通过生成语义分割图去除图像中的noise
+    - `Numeric attribute (count estimation)`:通过得到预测的数字和ground truth比较
+- `cvpr19: Wide-Area Crowd Counting via Ground-Plane Density Maps and Multi-View Fusion CNNs`
+  - 解决在单一图片上训练的模型在多摄像头多角度下表现不好的问题, 提供了三个fuse model:
+     - late fusion model fuses camera-view density maps: 先将不同角度下的密度图生成出来，再将这几(3)个密度图融合
+     - the naive early fusion model fuses camera-view feature maps: 直接融合预测过程中的feature map
+     - the multi-view multi-scale early fusion model favors that features aligned to the same ground-plane point have consistent scales:为了解决在不同视角下人物的大小可能不同, 通过获取多场景下的feature map, 通过上采样到相同尺寸, 并且通过Scale selection mask来转换到相同的尺寸, 其中Scale selection mask是根据摄像头位置设定的.
+- `cvpr19: Residual Regression with Semantic Prior for Crowd Counting`
+  - leverage the semantic prior to improve the performance of crowd counting and adopt adversarial loss
+  - 本文主要是探究了不同图像之间的关联关系(correlation relatioinship)
+  - 利用support images和input image叠加, support image就是semantic prior, 将不同support images融合的结果做residual loss.
+- `cvpr19: Density Map Regression Guided Detection Network for RGB-D Crowd Counting and Localization`
+  - RGB-D crowd counting, 利用了D(depth)深度信息
+  - 本文提出了一个数据集(ShanghaiTechRGBD): 2,193 images and 144,512 head counts
+  - 通过将深度信息不断加到不同尺寸的feature map上来适应不同远近的人群
+- `cvpr19: Recurrent Attentive Zooming for Joint Crowd Counting and Precise Localization`
+  - Main Net和 RAZNet(Recurrent Attentive Zooming), Main Net负责预测整张图, RAZNet负责选取整张图中的部分区域, 先将其超分到原图尺寸, 在进行预测, 最后将选中区域作为mask覆盖到原预测区域
+- `cvpr19: Crowd Counting and Density Estimation by Trellis Encoder-Decoder Network`
+  - 本文采用了一个Trellis结构的网络, 通过在网络的不同深度预测, 并将不同的预测结果组成联合loss
+  - 采用了一个Multi-scale Encoding Block, 就是将卷积层由一个多种尺寸卷积核组合的模块替代, 类似MCNN
+  - 将最后一个密度图预测之前的预测结果以dense connect类型连接在一起
+- `cvpr19: Context-Aware Crowd Counting`
+  - 本文利用不同大小的average pooling获取multiple receptive field
+    - 先使用不同size的average pooling, 再上采样的原图尺寸, 利用输入的feature map做残差, 将残差结果作为权重乘到input feature map中
+- `cvpr19: Revisiting Perspective Information for Efficient Crowd Counting`
+  - 本文要解决perspective distortion问题
+  - 先用摄像头生成perspective map, 将其应用到ground truth上, 再用改变后的gt进行预测
+- `cvpr19: Point in, Box out: Beyond Counting Persons in Crowds`
+   - detection方法
+   - 通过选取人头中心点和附近点的距离来生成bounding box, 利用curriculum learning来训练网络
+- `cvpr19: ADCrowdNet: An Attention-Injective Deformable Convolutional Network for Crowd Understanding`
+   - 利用attention权重来增强网络, 先用encoder形成一个attention map, 再将attention map乘到feature map上, 用于decoder预测密度图
+- `cvpr19: Learning from Synthetic Data for Crowd Counting in the Wild`
+   - 利用GTA-5游戏生成了一个新的数据集(GCC), 先生成游戏画面, 在利用Cycle GAN生成真实图像.
+- `cvprw19: Dense Crowd Counting Convolutional Neural Networks with Minimal Data
+using Semi-Supervised Dual-Goal Generative Adversarial Networks`
+   - 利用GAN做半监督
+- `iccv19: Pushing the Frontiers of Unconstrained Crowd Counting: New Dataset and Benchmark Method`
+   - 主要提出了一个新的数据集: JHU-CROWD
+- `iccv19: Adaptive Density Map Generation for Crowd Counting`
+   - 提出了一个新的`density map generation method`
+   - 用了两个网络:
+     - `counter`: 输入是图像, 用于预测密度图
+     - `generator`: 输入是点图, 用于生成ground truth密度图
+   - 本文目的就是利用多个不同sigma的高斯核, 通过`self-attention`来进行选择生成密度图
+- `iccv19: Crowd Counting with Deep Structured Scale Integration Network`
+   -
 
 ## Traditional methods
  - `cvpr06: Counting Crowded Moving Objects`
@@ -130,49 +183,3 @@ rank`
 ## Others
  - `nips17: Incorporating Side Information by Adaptive Convolution`
    - use geometric information to adapt the network to different scene geometries.
-
-
-## 2019
-- `cvpr19: Leveraging Heterogeneous Auxiliary Tasks to Assist Crowd Counting`
-  - 除了backbone本身的loss之外,增加了heterogeneous attributes,包括了
-    - `Geometric attribute (depth prediction)`:通过生成辅助depth map来减小perspective
-distortion的影响
-    - `Semantic attribute (crowd segmentation)`:通过生成语义分割图去除图像中的noise
-    - `Numeric attribute (count estimation)`:通过得到预测的数字和ground truth比较
-- `cvpr19: Wide-Area Crowd Counting via Ground-Plane Density Maps and Multi-View Fusion CNNs`
-  - 解决在单一图片上训练的模型在多摄像头多角度下表现不好的问题, 提供了三个fuse model:
-     - late fusion model fuses camera-view density maps: 先将不同角度下的密度图生成出来，再将这几(3)个密度图融合
-     - the naive early fusion model fuses camera-view feature maps: 直接融合预测过程中的feature map
-     - the multi-view multi-scale early fusion model favors that features aligned to the same ground-plane point have consistent scales:为了解决在不同视角下人物的大小可能不同, 通过获取多场景下的feature map, 通过上采样到相同尺寸, 并且通过Scale selection mask来转换到相同的尺寸, 其中Scale selection mask是根据摄像头位置设定的.
-- `cvpr19: Residual Regression with Semantic Prior for Crowd Counting`
-  - leverage the semantic prior to improve the performance of crowd counting and adopt adversarial loss
-  - 本文主要是探究了不同图像之间的关联关系(correlation relatioinship)
-  - 利用support images和input image叠加, support image就是semantic prior, 将不同support images融合的结果做residual loss.
-- `cvpr19: Density Map Regression Guided Detection Network for RGB-D Crowd Counting and Localization`
-  - RGB-D crowd counting, 利用了D(depth)深度信息
-  - 本文提出了一个数据集(ShanghaiTechRGBD): 2,193 images and 144,512 head counts
-  - 通过将深度信息不断加到不同尺寸的feature map上来适应不同远近的人群
-- `cvpr19: Recurrent Attentive Zooming for Joint Crowd Counting and Precise Localization`
-  - Main Net和 RAZNet(Recurrent Attentive Zooming), Main Net负责预测整张图, RAZNet负责选取整张图中的部分区域, 先将其超分到原图尺寸, 在进行预测, 最后将选中区域作为mask覆盖到原预测区域
-- `cvpr19: Crowd Counting and Density Estimation by Trellis Encoder-Decoder Network`
-  - 本文采用了一个Trellis结构的网络, 通过在网络的不同深度预测, 并将不同的预测结果组成联合loss
-  - 采用了一个Multi-scale Encoding Block, 就是将卷积层由一个多种尺寸卷积核组合的模块替代, 类似MCNN
-  - 将最后一个密度图预测之前的预测结果以dense connect类型连接在一起
-- `cvpr19: Context-Aware Crowd Counting`
-  - 本文利用不同大小的average pooling获取multiple receptive field
-    - 先使用不同size的average pooling, 再上采样的原图尺寸, 利用输入的feature map做残差, 将残差结果作为权重乘到input feature map中
-- `cvpr19: Revisiting Perspective Information for Efficient Crowd Counting`
-  - 本文要解决perspective distortion问题
-  - 先用摄像头生成perspective map, 将其应用到ground truth上, 再用改变后的gt进行预测
-- `cvpr19: Point in, Box out: Beyond Counting Persons in Crowds`
-   - detection方法
-   - 通过选取人头中心点和附近点的距离来生成bounding box, 利用curriculum learning来训练网络
-- `cvpr19: ADCrowdNet: An Attention-Injective Deformable Convolutional Network for Crowd Understanding`
-   - 利用attention权重来增强网络, 先用encoder形成一个attention map, 再将attention map乘到feature map上, 用过decoder预测密度图
-- `cvpr19: Learning from Synthetic Data for Crowd Counting in the Wild`
-   - 利用GTA-5游戏生成了一个新的数据集(GCC), 先生成游戏画面, 在利用Cycle GAN生成真实图像.
-- `cvprw19: Dense Crowd Counting Convolutional Neural Networks with Minimal Data
-using Semi-Supervised Dual-Goal Generative Adversarial Networks`
-   - 利用GAN做半监督
-- `iccv19: Pushing the Frontiers of Unconstrained Crowd Counting: New Dataset and Benchmark Method`
-   - 主要提出了一个新的数据集: JHU-CROWD
