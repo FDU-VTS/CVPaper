@@ -56,6 +56,8 @@ using Semi-Supervised Dual-Goal Generative Adversarial Networks`
    - 本文目的就是利用多个不同sigma的高斯核, 通过`self-attention`来进行选择生成密度图
 - `iccv19: Crowd Counting with Deep Structured Scale Integration Network`
    -
+- `aaai19: Almost Unsupervised Learning for Dense Crowd Counting`
+   - 检测了像素点级别的人头容量关系的无监督学习
 
 ## Traditional methods
  - `cvpr06: Counting Crowded Moving Objects`
